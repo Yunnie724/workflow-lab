@@ -1,11 +1,28 @@
-name: Python package
-on: [push]
+name: Python package  # 워크플로우 이름 지정
+
+on: [push]  # 코드가 push될 때 워크플로우 실행
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build:  # build 작업 정의
+
+    runs-on: ${{ matrix.os }}  
+    # 실행 환경을 매트릭스에서 정의한 OS(Ubuntu)로 설정
+    
     strategy:
       matrix:
-        python-version: ["3.9", "3.11", "3.13", "pypy3.10"]
+        os: [ubuntu-latest]  
+        # Ubuntu 최신 버전에서 실행
+
+        python-version: ["3.9", "3.11", "3.13", "pypy3.10"]  
+        # 여러 Python 버전에서 실행 (PyPy 포함)
+
         exclude:
           - os: ubuntu-latest
-            python-version: "3.11"
+            python-version: "3.11"  
+            # Ubuntu에서 Python 3.11 실행 제외
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}   
