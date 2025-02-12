@@ -7,6 +7,8 @@ jobs:
             - name: list all
               run: ls -al
             - uses: actions/checkout@v3
+              with:
+                path: sources
             - name: list all again
               run: | 
                 ls -al
