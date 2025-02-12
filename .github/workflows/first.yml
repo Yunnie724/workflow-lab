@@ -1,17 +1,9 @@
 name: The first workflows
 on: push
 jobs:
-    echo: 
+    checkout:
         runs-on: ubuntu-latest
         steps:
-            - run: echo 'Hello, Everyone!'
-    pwd-ls:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Print working directory
-              run: pwd
-            - name: list files
-              run: |
-                  cd ~
-                  ls -al
+            - name: list all
+              run: ls -al
             
