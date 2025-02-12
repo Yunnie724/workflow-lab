@@ -21,8 +21,15 @@ jobs:
             python-version: "3.11"  
             # Ubuntu에서 Python 3.11 실행 제외
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4  
+        # 현재 레포지토리를 CI 서버(런너)로 가져옴 (필수)
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}   
+          python-version: ${{ matrix.python-version }}  
+          # matrix에 정의된 각 Python 버전별로 환경 설정
+
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"  
+        # 현재 실행 중인 Python 버전 출력 (테스트용)   
