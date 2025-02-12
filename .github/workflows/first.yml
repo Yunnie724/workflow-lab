@@ -11,5 +11,6 @@ jobs:
                 path: sources
             - name: list all again
               run: | 
-                ls -al
+                ls -al sources
+                cd sources
                 cat .github/workflows/first.yml
