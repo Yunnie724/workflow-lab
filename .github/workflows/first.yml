@@ -1,16 +1,13 @@
-name: The first workflows
-on: push
+name: example-workflow
+on: [push]
 jobs:
-    checkout:
-        runs-on: ubuntu-latest
-        steps:
-            - name: list all
-              run: ls -al
-            - uses: actions/checkout@v3
-              with:
-                path: sources
-            - name: list all again
-              run: | 
-                ls -al sources
-                cd sources
-                cat .github/workflows/first.yml
+  production-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: sources
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - run: npm install -g bats
