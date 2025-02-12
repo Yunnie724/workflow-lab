@@ -6,4 +6,8 @@ jobs:
         steps:
             - name: list all
               run: ls -al
-            
+            - uses: actions/checkout@v3
+            - name: list all again
+              run: | 
+                ls -al
+                cat .github/workflows/first.yml
