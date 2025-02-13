@@ -2,13 +2,13 @@ name: Build and Deploy Spring Boot to AWS EC2
 on:
   push:
     branches: [ main ]
+
 env:
   PROJECT_NAME: cicdproject
   BUCKET_NAME: cide-codedeploy-4878
   CODE_DEPLOY_APP_NAME: cicdapp
   DEPLOYMENT_GROUP_NAME: cicdapp_deploy
   AWS_REGION: ap-northeast-2
-
 
 jobs:
   build:
@@ -22,7 +22,6 @@ jobs:
         with:
           java-version: 11
 
-
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
@@ -30,9 +29,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         shell: bash
-        # Gradle로 프로젝트를 빌드합니다. 결과물(JAR 파일 등)이 생성
+
       - name: Make Zip File
-        run: zip -qq -r ./$GITHUB_SHA.zip .
+        run: |
+          chmod +x scripts/deploy.sh  # 실행 권한 부여
+          zip -qq -r ./$GITHUB_SHA.zip . -x "*.git*" -x "*.github*" -x "node_modules/*"
         shell: bash
      
       - name: Configure AWS credentials
@@ -40,17 +41,16 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
      
       - name: Upload to S3
         run: |
-          aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
-
+          aws s3 cp --region ${{ env.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ env.BUCKET_NAME }}/${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
 
       - name: Code Deploy
         run: |
           aws deploy create-deployment \
-            --application-name $CODE_DEPLOY_APP_NAME \
+            --application-name ${{ env.CODE_DEPLOY_APP_NAME }} \
             --deployment-config-name CodeDeployDefault.OneAtATime \
-            --deployment-group-name $DEPLOYMENT_GROUP_NAME \
-            --s3-location bucket=$BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+            --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=${{ env.BUCKET_NAME }},bundleType=zip,key=${{ env.PROJECT_NAME }}/$GITHUB_SHA.zip
