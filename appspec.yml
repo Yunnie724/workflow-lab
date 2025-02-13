@@ -1,0 +1,17 @@
+version: 0.0 # 현재는 0.0 고정값
+os: linux # 대상은 Linux 기반 시스템
+
+
+files:
+  - source: /
+    destination: /home/ec2-user/cicdproject 
+    #모든 파일을 EC2 인스턴스의 디렉토리로 복사
+permissions:
+  - object: /home/ec2-user/cicdproject/
+    owner: ec2-user
+    group: ec2-user
+hooks: #CodeDeploy의 라이프사이클 이벤트에서 실행할 명령이나 스크립트
+  AfterInstall:
+    - location: scripts/deploy.sh
+      timeout: 60
+      runas: ec2-user
